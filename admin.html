@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="鲲鸿祥瑞产品展示 - 后台管理" />
+  <title>后台管理 - 鲲鸿祥瑞产品展示</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <a href="index.html" class="logo-link">
+      <img src="images/logo.svg" alt="鲲鸿祥瑞" class="logo-img" />
+    </a>
+    <h1 class="site-title">鲲鸿祥瑞产品展示</h1>
+  </header>
+
+  <!-- Login -->
+  <div class="login-container" id="loginContainer">
+    <div class="login-card">
+      <h2>后台管理登录</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">用户名</label>
+          <input type="text" id="username" placeholder="请输入用户名" required />
+        </div>
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" id="password" placeholder="请输入密码" required />
+        </div>
+        <div class="error-msg" id="loginError"></div>
+        <button type="submit" class="btn btn-primary">登 录</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Panel (hidden until login) -->
+  <div id="adminPanel" style="display:none;">
+    <div class="admin-container">
+
+      <div class="admin-header">
+        <h1>后台管理 - 鲲鸿祥瑞产品展示</h1>
+      </div>
+
+      <!-- Add / Edit Product -->
+      <div class="section-title" id="formTitle">添加新产品</div>
+      <form class="admin-form" id="productForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodCategory">产品方向 *</label>
+            <select id="prodCategory" required>
+              <option value="">请选择</option>
+              <option value="新疆">新疆</option>
+              <option value="四川">四川</option>
+              <option value="甘/青">甘/青</option>
+              <option value="邮轮">邮轮</option>
+              <option value="云南">云南</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="prodName">海报名称 *</label>
+            <input type="text" id="prodName" placeholder="产品名称" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prodDays">天数 *</label>
+            <input type="text" id="prodDays" placeholder="如：8天7晚" required />
+          </div>
+          <div class="form-group">
+            <label for="posterInput">海报图片</label>
+            <input type="file" id="posterInput" accept="image/*" />
+            <img id="posterPreview" class="image-preview" style="display:none;" alt="预览" />
+          </div>
+        </div>
+        <div class="form-row full">
+          <div class="form-group">
+            <label for="prodPolicy">收客细则 *</label>
+            <textarea id="prodPolicy" placeholder="请输入收客细则..." required></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itineraryInput">行程文件</label>
+            <input type="file" id="itineraryInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp" />
+            <small id="itineraryName" style="display:none;color:var(--primary);"></small>
+          </div>
+        </div>
+        <div class="form-row full" style="display:flex;gap:10px;">
+          <button type="submit" class="btn btn-primary" style="width:auto;">保存产品</button>
+          <button type="button" class="btn btn-sm" id="cancelEditBtn" style="display:none;background:#999;color:#fff;">取消编辑</button>
+        </div>
+      </form>
+
+      <!-- Product List -->
+      <div class="section-title">已有产品列表</div>
+      <div class="admin-product-list">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>序号</th>
+              <th>产品方向</th>
+              <th>海报名称</th>
+              <th>上传时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="productListBody"></tbody>
+        </table>
+        <div class="no-data" id="noData" style="display:none;">暂无产品数据</div>
+
+        <div class="export-section">
+          <button class="btn btn-outline" id="exportBtn">导出数据文件</button>
+          <div class="export-hint">
+            下载后请将文件放入 <code>H:\办公其他\渠道团产品汇总网站\js\</code> 目录替换原 data.js，然后上传到 GitHub。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <h3>确认删除</h3>
+      <p id="modalMessage"></p>
+      <div class="modal-actions">
+        <button class="btn btn-sm" id="modalCancel" style="background:#999;color:#fff;">取消</button>
+        <button class="btn btn-danger" id="modalConfirm">确认删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <span class="divider">——</span> 底线在此 <span class="divider">——</span>
+    <br />
+    <small>最后更新：2026/6/16 14:02</small>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
