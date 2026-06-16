@@ -5,53 +5,53 @@
 
 const PRODUCT_DATA = [
   {
-    id: 1,
-    category: "新疆",
-    name: "北疆喀纳斯禾木深度游",
-    days: "8天7晚",
-    policy: "收客年龄25-65周岁，单房差1200元/人，儿童不占床减800元。含全程住宿+门票+区间车+导游服务。不含往返大交通、个人消费及自费项目。提前15天报名立减200元/人，4人以上同行每人再减100元。",
-    image: "images/poster1.jpg",
-    itinerary: "北疆喀纳斯行程.pdf",
-    uploadTime: "202606161402"
+    "id": 1,
+    "category": "新疆",
+    "name": "至尊喀禾-吐鲁番往返",
+    "days": "双飞8天",
+    "policy": "返800积分 \n1、疆美伊犁 +沙漠（4店）2个玉+棉花驼绒+雪莲  255必消小交通\n2、南疆故事（3店）2个玉+棉花驼绒  45必消小交通\n3、至尊喀禾+沙漠 （4店）2个玉+棉花驼绒+雪莲  188必消小交通\n4、单房差6月-7月4日收1200元\n5、收客规则：正常年龄28-65岁，2-12岁不占门票+1500净结，13岁-27岁收成本+3000元净结，65-70岁加收500元，70岁以上就不要再收了。\n6、新疆收客提示：两年内走过新疆的不收，两年内走过云南，青海 四川 西藏的全团人数不超15%。",
+    "image": "images/poster_placeholder.jpg",
+    "itinerary": "无行程文件",
+    "uploadTime": "20260616"
   },
   {
-    id: 2,
-    category: "四川",
-    name: "九寨沟黄龙都江堰全景游",
-    days: "6天5晚",
-    policy: "收客年龄18-70周岁，身体健康无严重高原反应史。含全程四星住宿+门票+导游+旅游保险。不含索道、观光车等景区小交通。6-9月旺季价格上浮10%，节假日价格另询。",
-    image: "images/poster2.jpg",
-    itinerary: "九寨沟全景行程.docx",
-    uploadTime: "202606151830"
+    "id": 2,
+    "category": "四川",
+    "name": "天界九寨（黄龙+九寨）",
+    "days": "双飞6天",
+    "policy": "返600积分 \n1、天界九寨黄龙 2个玉+综合店 0必消\n2、正常年龄28-65岁\n3、单房差700元",
+    "image": "images/poster_placeholder.jpg",
+    "itinerary": "无行程文件",
+    "uploadTime": "20260616"
   },
   {
-    id: 3,
-    category: "邮轮",
-    name: "皇家加勒比海洋光谱号日韩航线",
-    days: "5天4晚",
-    policy: "收客不限年龄，未成年人需监护人陪同。含船票+港务费+指定餐厅餐饮+娱乐设施。不含邮轮服务费（约14.5美元/人/晚）、岸上观光费用、个人消费。阳台房限量特惠，先到先得。",
-    image: "images/poster3.jpg",
-    itinerary: "海洋光谱号行程单.pdf",
-    uploadTime: "202606141200"
+    "id": 3,
+    "category": "云南",
+    "name": "理想号",
+    "days": "双飞6天",
+    "policy": "返400积分 \n1、昆大丽 2个玉+综合店 90必消\n2、正常年龄28-65岁",
+    "image": "images/poster_placeholder.jpg",
+    "itinerary": "无行程文件",
+    "uploadTime": "20260616"
   },
   {
-    id: 4,
-    category: "云南",
-    name: "大理丽江香格里拉环线",
-    days: "7天6晚",
-    policy: "收客年龄22-60周岁，不接受孕妇及严重心脏病患者。含全程准五星住宿+门票+导游+接送机。不含往返机票、古城维护费（50元）、个人购物消费。2人起收，单人参团需补房差800元。",
-    image: "images/poster4.jpg",
-    itinerary: "云南环线行程.docx",
-    uploadTime: "202606131000"
+    "id": 4,
+    "category": "云南",
+    "name": "大美红河",
+    "days": "双飞6天",
+    "policy": "返500积分 \n1、红河线 2个玉+1综合店\n2、正常年龄28-65岁",
+    "image": "images/poster_placeholder.jpg",
+    "itinerary": "无行程文件",
+    "uploadTime": "20260616"
   },
   {
-    id: 5,
-    category: "甘/青",
-    name: "甘青大环线丝路之旅",
-    days: "9天8晚",
-    policy: "收客年龄20-68周岁，无严重高血压、心脏病。含全程三星/四星住宿+门票+导游+旅游大巴。不含往返交通、骑骆驼等自费项目、单房差1500元。沙漠地区注意防晒补水，早晚温差大需带厚外套。",
-    image: "images/poster5.jpg",
-    itinerary: "甘青大环线行程.pdf",
-    uploadTime: "202606120900"
+    "id": 5,
+    "category": "青海甘肃",
+    "name": "甘青大环线",
+    "days": "双飞8天",
+    "policy": "返700积分 \n1、甘青大环线 2个玉+综合店\n2、正常年龄28-65岁",
+    "image": "images/poster_placeholder.jpg",
+    "itinerary": "无行程文件",
+    "uploadTime": "20260616"
   }
 ];

@@ -16,8 +16,11 @@
   const tableBody = document.getElementById("tableBody");
   const noDataEl = document.getElementById("noData");
   const logoutBtn = document.getElementById("logoutBtn");
+  const searchInput = document.getElementById("searchInput");
+  const searchBtn = document.getElementById("searchBtn");
 
   let currentCategory = null;
+  let searchKeyword = "";
 
   if (sessionStorage.getItem("detail_logged_in") === "1") {
     showMain();
@@ -56,8 +59,20 @@
   function showMain() {
     if (loginContainer) loginContainer.style.display = "none";
     if (mainContent) mainContent.style.display = "block";
+    initLogo();
     buildNav();
+    wireSearch();
     renderTable();
+  }
+
+  function initLogo() {
+    var logoImg = document.getElementById("headerLogoImg");
+    if (!logoImg) return;
+    if (SITE_CONFIG.logoBase64) {
+      logoImg.src = SITE_CONFIG.logoBase64;
+    } else if (SITE_CONFIG.logoPath) {
+      logoImg.src = SITE_CONFIG.logoPath;
+    }
   }
 
   function buildNav() {
@@ -102,6 +117,35 @@
     });
   }
 
+  function debounce(fn, delay) {
+    var timer = null;
+    return function () {
+      var context = this;
+      var args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        fn.apply(context, args);
+      }, delay);
+    };
+  }
+
+  function wireSearch() {
+    if (!searchInput || !searchBtn) return;
+
+    searchBtn.addEventListener("click", function () {
+      searchKeyword = (searchInput.value || "").trim();
+      renderTable();
+    });
+
+    searchInput.addEventListener(
+      "keyup",
+      debounce(function () {
+        searchKeyword = (searchInput.value || "").trim();
+        renderTable();
+      }, 300)
+    );
+  }
+
   function formatTime(raw) {
     if (!raw || raw.length < 12) return raw;
     return raw.slice(0, 4) + "/" + raw.slice(4, 6) + "/" + raw.slice(6, 8) + " " + raw.slice(8, 10) + ":" + raw.slice(10, 12);
@@ -118,6 +162,12 @@
     if (currentCategory) {
       data = data.filter(function (item) {
         return item.category === currentCategory;
+      });
+    }
+
+    if (searchKeyword) {
+      data = data.filter(function (item) {
+        return item.name.indexOf(searchKeyword) !== -1;
       });
     }
 
@@ -224,7 +274,7 @@
     box.querySelector("#modalDownload").addEventListener("click", function () {
       var a = document.createElement("a");
       a.href = filePath;
-      a.download = fileName;
+      a.download = fileName.replace(/\.jfif$/i, ".jpg");
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

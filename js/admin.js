@@ -84,6 +84,7 @@
   var exportDataBtn = document.getElementById("exportDataBtn");
   var exportConfigBtn = document.getElementById("exportConfigBtn");
   var exportAllBtn = document.getElementById("exportAllBtn");
+  var batchExportImagesBtn = document.getElementById("batchExportImagesBtn");
   var categoryDatalist = document.getElementById("categoryDatalist");
 
   // ============ Auth ============
@@ -119,6 +120,14 @@
     renderProductList();
     renderCategoryList();
     renderUserTable();
+
+    // 从 localStorage 恢复已保存的 logo
+    var savedLogo = localStorage.getItem("admin_logoBase64");
+    if (savedLogo) {
+      logoBase64 = savedLogo;
+      if (logoPreviewImg) logoPreviewImg.src = savedLogo;
+      if (headerLogoImg) headerLogoImg.src = savedLogo;
+    }
   }
 
   // ============ Tab Switching ============
@@ -166,13 +175,55 @@
     });
   }
 
+  // ============ Image Filename Generator ============
+  function generateImageFilename(ext) {
+    var now = new Date();
+    var ts =
+      now.getFullYear() +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      String(now.getDate()).padStart(2, "0") +
+      String(now.getHours()).padStart(2, "0") +
+      String(now.getMinutes()).padStart(2, "0") +
+      String(now.getSeconds()).padStart(2, "0");
+    return "poster_" + ts + "." + ext;
+  }
+
+  // ============ Download Image File ============
+  function downloadImageFile(base64, filename) {
+    var arr = base64.split(",");
+    var mime = arr[0].match(/:(.*?);/)[1];
+    var bstr = atob(arr[1]);
+    var n = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    var blob = new Blob([u8arr], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Track newly uploaded poster filename for current editing session
+  var newPosterFilename = "";
+
   // ============ Poster input ============
   if (posterInput) {
     posterInput.addEventListener("change", function () {
       var file = posterInput.files[0];
       if (!file) return;
+      var ext = file.name.split(".").pop().toLowerCase();
+      if (ext === "jfif") ext = "jpg";
+      newPosterFilename = generateImageFilename(ext);
       fileToBase64(file).then(function (b64) {
         posterBase64 = b64;
+        // 暂存到 localStorage 用于预览
+        localStorage.setItem("preview_poster_" + newPosterFilename, b64);
         if (posterPreview) {
           posterPreview.src = b64;
           posterPreview.style.display = "block";
@@ -186,7 +237,7 @@
     itineraryInput.addEventListener("change", function () {
       var file = itineraryInput.files[0];
       if (!file) return;
-      itineraryFileName = file.name;
+      itineraryFileName = file.name.replace(/\.jfif$/i, ".jpg");
       fileToBase64(file).then(function (b64) {
         itineraryBase64 = b64;
         if (itineraryName) {
@@ -231,15 +282,25 @@
         var idx = products.findIndex(function (p) { return p.id === editingId; });
         if (idx !== -1) {
           var existing = products[idx];
+          var imgVal;
+          if (posterBase64) {
+            // 有新上传的海报，触发下载，存路径
+            downloadImageFile(posterBase64, newPosterFilename);
+            imgVal = "images/" + newPosterFilename;
+            // 清理 localStorage 暂存
+            localStorage.removeItem("preview_poster_" + newPosterFilename);
+          } else {
+            imgVal = existing.image;
+          }
           products[idx] = {
             id: existing.id,
             category: category,
             name: name,
             days: days,
             policy: policy,
-            image: posterBase64 || existing.image,
+            image: imgVal,
             itinerary: itineraryFileName || existing.itinerary,
-            uploadTime: existing.uploadTime
+            uploadTime: uploadTime
           };
         }
         editingId = null;
@@ -251,13 +312,19 @@
           ? Math.max.apply(null, products.map(function (p) { return p.id; })) + 1
           : 1;
 
+        if (posterBase64) {
+          // 有新上传的海报，触发下载，存路径
+          downloadImageFile(posterBase64, newPosterFilename);
+          localStorage.removeItem("preview_poster_" + newPosterFilename);
+        }
+
         products.push({
           id: newId,
           category: category,
           name: name,
           days: days,
           policy: policy,
-          image: posterBase64 || "images/poster_placeholder.jpg",
+          image: posterBase64 ? ("images/" + newPosterFilename) : "images/poster_placeholder.jpg",
           itinerary: itineraryFileName || "无行程文件",
           uploadTime: uploadTime
         });
@@ -266,6 +333,7 @@
 
       productForm.reset();
       posterBase64 = "";
+      newPosterFilename = "";
       itineraryBase64 = "";
       itineraryFileName = "";
       if (posterPreview) posterPreview.style.display = "none";
@@ -281,6 +349,7 @@
       editingId = null;
       productForm.reset();
       posterBase64 = "";
+      newPosterFilename = "";
       itineraryBase64 = "";
       itineraryFileName = "";
       if (posterPreview) posterPreview.style.display = "none";
@@ -363,13 +432,45 @@
 
     if (item.image && item.image.startsWith("data:")) {
       posterBase64 = item.image;
+      newPosterFilename = "";
       if (posterPreview) {
         posterPreview.src = item.image;
         posterPreview.style.display = "block";
       }
     } else {
+      // 路径格式：尝试从 localStorage 加载预览
       posterBase64 = "";
-      if (posterPreview) posterPreview.style.display = "none";
+      newPosterFilename = "";
+      if (item.image) {
+        // 尝试从 localStorage 查找缓存的 base64
+        var cachedKeys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k.startsWith("preview_poster_")) cachedKeys.push(k);
+        }
+        var found = false;
+        for (var j = 0; j < cachedKeys.length; j++) {
+          var fname = cachedKeys[j].replace("preview_poster_", "");
+          if (item.image.indexOf(fname) !== -1) {
+            var cached = localStorage.getItem(cachedKeys[j]);
+            if (cached) {
+              posterBase64 = cached;
+              if (posterPreview) {
+                posterPreview.src = cached;
+                posterPreview.style.display = "block";
+              }
+              found = true;
+            }
+            break;
+          }
+        }
+        if (!found && posterPreview) {
+          posterPreview.src = item.image;
+          posterPreview.style.display = "block";
+        }
+      } else if (posterPreview) {
+        posterPreview.style.display = "none";
+      }
     }
 
     itineraryFileName = item.itinerary;
@@ -445,6 +546,7 @@
       if (!file) return;
       fileToBase64(file).then(function (b64) {
         logoBase64 = b64;
+        localStorage.setItem("admin_logoBase64", b64);
         if (logoPreviewImg) logoPreviewImg.src = b64;
         if (headerLogoImg) headerLogoImg.src = b64;
         showToast("Logo 已更新（预览），导出 config.js 后生效", "success");
@@ -528,10 +630,14 @@
     modalConfirm._deleteCategory = true;
   }
 
-  // 扩展 modalConfirm 处理分类删除
+  // 扩展 modalConfirm 处理导出提示关闭
   if (modalConfirm) {
-    var origClick = modalConfirm.onclick;
     modalConfirm.addEventListener("click", function () {
+      if (modalConfirm._exportAlert) {
+        modalConfirm._exportAlert = false;
+        if (modalOverlay) modalOverlay.classList.remove("show");
+        return;
+      }
       if (modalConfirm._deleteCategory && deleteCategoryTarget) {
         var dc = deleteCategoryTarget;
         // 从 siteCategories 移除
@@ -746,6 +852,7 @@
   function buildConfigContent() {
     var configObj = {
       title: "鲲鸿祥瑞产品展示",
+      logoBase64: logoBase64 || SITE_CONFIG.logoBase64 || null,
       logoPath: logoBase64 || SITE_CONFIG.logoPath || "images/logo.svg",
       primaryColor: SITE_CONFIG.primaryColor || "#4eb3f0",
       starredCategories: starredCategories.slice(),
@@ -796,6 +903,60 @@
     );
   }
 
+  function showExportImagesAlert() {
+    if (modalTitle) modalTitle.textContent = "部署提示";
+    if (modalMessage) {
+      modalMessage.innerHTML =
+        "请将下载的图片文件放入 <b>images</b> 文件夹，与 <b>data.js</b> 一起部署。<br/><br/>" +
+        "文件结构：<br/>" +
+        "&nbsp;&nbsp;index.html<br/>" +
+        "&nbsp;&nbsp;js/data.js<br/>" +
+        "&nbsp;&nbsp;js/config.js<br/>" +
+        "&nbsp;&nbsp;js/main.js<br/>" +
+        "&nbsp;&nbsp;js/admin.js<br/>" +
+        "&nbsp;&nbsp;admin.html<br/>" +
+        "&nbsp;&nbsp;images/<br/>" +
+        "&nbsp;&nbsp;&nbsp;&nbsp;poster_xxx.jpg<br/>";
+    }
+    if (modalOverlay) modalOverlay.classList.add("show");
+    modalConfirm._exportAlert = true;
+    // 关闭时不触发删除类操作
+    modalConfirm._deleteCategory = false;
+    modalConfirm._deleteUser = false;
+  }
+
+  function batchExportImages() {
+    var exportedCount = 0;
+    products.forEach(function (p) {
+      if (p.image && !p.image.startsWith("data:")) {
+        // 提取文件名
+        var filename = p.image.split("/").pop();
+        // 从 localStorage 查找缓存的 base64
+        var cachedKey = "preview_poster_" + filename;
+        var cached = localStorage.getItem(cachedKey);
+        if (cached) {
+          downloadImageFile(cached, filename);
+          exportedCount++;
+        }
+      } else if (p.image && p.image.startsWith("data:")) {
+        // 旧格式兼容：还有 base64 的话直接下载
+        var ext = p.image.match(/^data:image\/(.*?);/);
+        ext = ext ? ext[1] : "jpg";
+        if (ext === "jfif") ext = "jpg";
+        var fn = generateImageFilename(ext);
+        downloadImageFile(p.image, fn);
+        // 更新产品数据中的 image 字段
+        p.image = "images/" + fn;
+        exportedCount++;
+      }
+    });
+    if (exportedCount > 0) {
+      showToast("已导出 " + exportedCount + " 张图片", "success");
+    } else {
+      showToast("没有可导出的图片（请先上传海报并保存产品）", "error");
+    }
+  }
+
   function downloadFile(content, filename, mimeType) {
     var blob = new Blob([content], { type: mimeType });
     var url = URL.createObjectURL(blob);
@@ -812,6 +973,8 @@
     exportDataBtn.addEventListener("click", function () {
       downloadFile(buildDataContent(), "data.js", "application/javascript");
       showToast("data.js 已导出", "success");
+      // 延迟弹窗提示
+      setTimeout(showExportImagesAlert, 800);
     });
   }
 
@@ -828,8 +991,14 @@
       setTimeout(function () {
         downloadFile(buildConfigContent(), "config.js", "application/javascript");
         showToast("data.js 和 config.js 已导出", "success");
+        setTimeout(showExportImagesAlert, 800);
       }, 500);
     });
+  }
+
+  // 批量导出图片按钮
+  if (batchExportImagesBtn) {
+    batchExportImagesBtn.addEventListener("click", batchExportImages);
   }
 
   // ============ Toast ============

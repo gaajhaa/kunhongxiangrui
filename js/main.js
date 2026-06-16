@@ -35,15 +35,13 @@
       card.setAttribute("data-category", item.category);
 
       card.innerHTML =
-        '<a href="' +
-        item.image +
-        '" target="_blank" class="poster-link" download>' +
+        '<div class="poster-link" style="cursor:pointer;">' +
         '<img class="poster-img" src="' +
         item.image +
         '" alt="' +
         item.name +
-        '" loading="lazy" style="max-width:400px;" />' +
-        "</a>" +
+        '" loading="lazy" />' +
+        "</div>" +
         '<div class="poster-info">' +
         '<div class="poster-name">' +
         item.name +
@@ -52,6 +50,16 @@
         formatTime(item.uploadTime) +
         "</div>" +
         "</div>";
+
+      // 点击缩略图弹窗显示原图
+      card.querySelector(".poster-link").addEventListener("click", function () {
+        var modal = document.getElementById("imgModal");
+        var modalImg = document.getElementById("modalImg");
+        if (modal && modalImg) {
+          modalImg.src = item.image;
+          modal.style.display = "flex";
+        }
+      });
 
       container.appendChild(card);
     });
@@ -155,7 +163,18 @@
     });
   }
 
+  function initLogo() {
+    var logoImg = document.getElementById("headerLogoImg");
+    if (!logoImg) return;
+    if (SITE_CONFIG.logoBase64) {
+      logoImg.src = SITE_CONFIG.logoBase64;
+    } else if (SITE_CONFIG.logoPath) {
+      logoImg.src = SITE_CONFIG.logoPath;
+    }
+  }
+
   function init() {
+    initLogo();
     buildSideNav();
     var sorted = PRODUCT_DATA.slice().sort(function (a, b) {
       return b.uploadTime.localeCompare(a.uploadTime);

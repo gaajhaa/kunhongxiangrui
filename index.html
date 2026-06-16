@@ -12,7 +12,7 @@
   <!-- Header -->
   <header class="site-header">
     <a href="index.html" class="logo-link">
-      <img src="images/logo.svg" alt="鲲鸿祥瑞" class="logo-img" />
+      <img id="headerLogoImg" alt="鲲鸿祥瑞" class="logo-img" />
     </a>
     <h1 class="site-title" onclick="location.href='detail.html'">鲲鸿祥瑞产品展示</h1>
   </header>
@@ -32,6 +32,11 @@
     <br />
     <small>最后更新：2026/6/16 14:02</small>
   </footer>
+
+  <!-- Image Modal -->
+  <div class="img-modal" id="imgModal" onclick="this.style.display='none'">
+    <img id="modalImg" alt="" />
+  </div>
 
   <!-- Scripts -->
   <script src="js/config.js"></script>

@@ -72,16 +72,21 @@ input, textarea, select {
 
 /* ---------- Header ---------- */
 .site-header {
-  text-align: center;
-  padding: 30px 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 20px 16px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
 .logo-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
   transition: var(--transition);
+  flex-shrink: 0;
 }
 
 .logo-link:hover {
@@ -89,9 +94,9 @@ input, textarea, select {
 }
 
 .logo-img {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 8px;
+  height: 50px;
+  width: auto;
+  display: block;
 }
 
 .site-title {
@@ -100,6 +105,7 @@ input, textarea, select {
   color: var(--primary);
   cursor: pointer;
   user-select: none;
+  white-space: nowrap;
 }
 
 .site-title:hover {
@@ -229,13 +235,39 @@ input, textarea, select {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-start;
   padding: 12px 20px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 100;
+}
+
+.nav-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-search-input {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  width: 200px;
+  transition: var(--transition);
+}
+
+.nav-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(78, 179, 240, 0.15);
+}
+
+.nav-search-btn {
+  padding: 6px 14px;
+  font-size: 0.85rem;
 }
 
 .nav-btn {
@@ -311,12 +343,13 @@ input, textarea, select {
 
 .masonry {
   column-count: 4;
-  column-gap: 16px;
+  column-gap: 12px;
 }
 
 .masonry-item {
   break-inside: avoid;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  width: 240px;
   background: var(--bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -336,7 +369,7 @@ input, textarea, select {
 
 .masonry-item .poster-img {
   width: 100%;
-  max-width: 400px;
+  height: auto;
   display: block;
 }
 
@@ -870,6 +903,9 @@ input, textarea, select {
     padding: 10px 16px;
     font-size: 0.88rem;
   }
+  .nav-search-input {
+    width: 160px;
+  }
 }
 
 /* Tablet / small: 2-3 cols */
@@ -912,6 +948,10 @@ input, textarea, select {
   }
   .side-nav .search-input {
     width: 100px;
+  }
+  .nav-search-input {
+    width: 140px;
+    font-size: 0.8rem;
   }
   .site-footer {
     padding-bottom: 70px;
@@ -993,10 +1033,18 @@ input, textarea, select {
     padding-bottom: 70px;
   }
   .site-header {
-    padding: 20px 12px 12px;
+    padding: 14px 10px 10px;
   }
   .site-title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+  }
+  .logo-img {
+    height: 36px;
+  }
+  .nav-search-input {
+    width: 110px;
+    font-size: 0.75rem;
+    padding: 5px 8px;
   }
   .product-table thead {
     display: none;
@@ -1072,4 +1120,26 @@ input, textarea, select {
   .user-table td {
     padding: 6px 8px;
   }
+}
+
+/* ========== Image Modal ========== */
+.img-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-out;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.img-modal img {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  cursor: default;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
 }

@@ -12,7 +12,7 @@
   <!-- Header -->
   <header class="site-header">
     <a href="index.html" class="logo-link">
-      <img src="images/logo.svg" alt="鲲鸿祥瑞" class="logo-img" />
+      <img id="headerLogoImg" alt="鲲鸿祥瑞" class="logo-img" />
     </a>
     <h1 class="site-title">鲲鸿祥瑞产品展示 · 内部详情</h1>
   </header>
@@ -41,6 +41,10 @@
 
     <!-- Nav -->
     <nav class="nav-bar" id="navBar">
+      <div class="nav-search-wrap">
+        <input type="text" class="nav-search-input" id="searchInput" placeholder="搜索产品名称..." />
+        <button class="btn btn-sm btn-primary nav-search-btn" id="searchBtn" style="width:auto;">搜索</button>
+      </div>
       <button class="btn btn-sm btn-danger" id="logoutBtn" style="margin-left:auto;">退出登录</button>
     </nav>
 
