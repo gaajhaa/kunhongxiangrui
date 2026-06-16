@@ -8,13 +8,11 @@
 
   const container = document.getElementById("masonryContainer");
   const sideNav = document.getElementById("sideNav");
-  const searchInput = document.getElementById("searchInput");
-  const searchBtn = document.getElementById("searchBtn");
   const noDataEl = document.getElementById("noData");
 
-  let currentCategory = null; // null = all
+  let currentCategory = null;
 
-  // --- Format time: 202606161402 -> 20260616 1402 ---
+  // --- Format time ---
   function formatTime(raw) {
     if (!raw || raw.length < 12) return raw;
     return raw.slice(0, 8) + " " + raw.slice(8, 12);
@@ -71,17 +69,16 @@
       });
     }
 
-    const keyword = searchInput ? searchInput.value.trim() : "";
-    if (keyword) {
+    const keyword = (document.getElementById("searchInput") || {}).value || "";
+    if (keyword.trim()) {
       data = data.filter(function (item) {
-        return item.name.indexOf(keyword) !== -1;
+        return item.name.indexOf(keyword.trim()) !== -1;
       });
     }
 
     render(data);
   }
 
-  // --- Debounce ---
   function debounce(fn, delay) {
     var timer = null;
     return function () {
@@ -98,8 +95,9 @@
   function buildSideNav() {
     if (!sideNav) return;
 
-    // Category buttons
-    CONFIG.categories.forEach(function (cat) {
+    const categories = SITE_CONFIG.starredCategories || CONFIG.categories || [];
+
+    categories.forEach(function (cat) {
       var btn = document.createElement("button");
       btn.className = "nav-btn";
       btn.textContent = cat;
@@ -116,7 +114,6 @@
       sideNav.appendChild(btn);
     });
 
-    // Search
     var wrap = document.createElement("div");
     wrap.className = "search-wrap";
 
@@ -134,14 +131,13 @@
     wrap.appendChild(btn);
     sideNav.appendChild(wrap);
 
-    // Events
     btn.addEventListener("click", function () {
       filter();
     });
 
     input.addEventListener(
       "keyup",
-      debounce(function (e) {
+      debounce(function () {
         filter();
       }, 400)
     );
@@ -159,17 +155,14 @@
     });
   }
 
-  // --- Init ---
   function init() {
     buildSideNav();
-    // Initial render: sort by time desc
     var sorted = PRODUCT_DATA.slice().sort(function (a, b) {
       return b.uploadTime.localeCompare(a.uploadTime);
     });
     render(sorted);
   }
 
-  // Start when DOM ready
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {

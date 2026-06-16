@@ -19,22 +19,22 @@
 
   let currentCategory = null;
 
-  // --- Check login ---
   if (sessionStorage.getItem("detail_logged_in") === "1") {
     showMain();
   }
 
-  // --- Login ---
   if (loginForm) {
     loginForm.addEventListener("submit", function (e) {
       e.preventDefault();
       var u = usernameInput.value.trim();
       var p = passwordInput.value.trim();
 
-      if (
-        u === CONFIG.detailAuth.username &&
-        p === CONFIG.detailAuth.password
-      ) {
+      var users = SITE_CONFIG.detailUsers || [];
+      var matched = users.some(function (user) {
+        return user.username === u && user.password === p;
+      });
+
+      if (matched) {
         sessionStorage.setItem("detail_logged_in", "1");
         showMain();
       } else {
@@ -46,7 +46,6 @@
     });
   }
 
-  // --- Logout ---
   if (logoutBtn) {
     logoutBtn.addEventListener("click", function () {
       sessionStorage.removeItem("detail_logged_in");
@@ -61,11 +60,9 @@
     renderTable();
   }
 
-  // --- Nav ---
   function buildNav() {
     if (!navBar) return;
 
-    // All button
     var allBtn = document.createElement("button");
     allBtn.className = "nav-btn active";
     allBtn.textContent = "全部";
@@ -76,7 +73,8 @@
     });
     navBar.appendChild(allBtn);
 
-    CONFIG.categories.forEach(function (cat) {
+    var categories = SITE_CONFIG.starredCategories || CONFIG.categories || [];
+    categories.forEach(function (cat) {
       var btn = document.createElement("button");
       btn.className = "nav-btn";
       btn.textContent = cat;
@@ -104,13 +102,11 @@
     });
   }
 
-  // --- Format time ---
   function formatTime(raw) {
     if (!raw || raw.length < 12) return raw;
     return raw.slice(0, 4) + "/" + raw.slice(4, 6) + "/" + raw.slice(6, 8) + " " + raw.slice(8, 10) + ":" + raw.slice(10, 12);
   }
 
-  // --- Render ---
   function renderTable() {
     if (!tableBody) return;
     tableBody.innerHTML = "";
@@ -134,22 +130,18 @@
     data.forEach(function (item) {
       var tr = document.createElement("tr");
 
-      // Category
       var tdCat = document.createElement("td");
       tdCat.textContent = item.category;
       tdCat.setAttribute("data-label", "产品方向");
 
-      // Name
       var tdName = document.createElement("td");
       tdName.textContent = item.name;
       tdName.setAttribute("data-label", "海报名称");
 
-      // Days
       var tdDays = document.createElement("td");
       tdDays.textContent = item.days;
       tdDays.setAttribute("data-label", "天数");
 
-      // Policy
       var tdPolicy = document.createElement("td");
       tdPolicy.className = "policy-cell";
       tdPolicy.textContent = item.policy;
@@ -159,7 +151,6 @@
         tdPolicy.classList.toggle("expanded");
       });
 
-      // Poster thumb
       var tdPoster = document.createElement("td");
       tdPoster.setAttribute("data-label", "海报预览");
       var img = document.createElement("img");
@@ -172,7 +163,6 @@
       });
       tdPoster.appendChild(img);
 
-      // Itinerary
       var tdFile = document.createElement("td");
       tdFile.setAttribute("data-label", "行程下载");
       var fileLink = document.createElement("span");
@@ -185,7 +175,6 @@
       });
       tdFile.appendChild(fileLink);
 
-      // Time
       var tdTime = document.createElement("td");
       tdTime.textContent = formatTime(item.uploadTime);
       tdTime.setAttribute("data-label", "上传时间");
@@ -202,9 +191,7 @@
     });
   }
 
-  // --- File Modal ---
   function showFileModal(fileName) {
-    // Remove existing modal
     var existing = document.querySelector(".modal-overlay");
     if (existing) existing.remove();
 
