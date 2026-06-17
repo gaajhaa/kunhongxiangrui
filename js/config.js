@@ -1,6 +1,6 @@
 // ============================================
 // 鲲鸿祥瑞产品展示 - 全局配置
-// 更新日期：20260616
+// 更新日期：20260617
 // ============================================
 
 const SITE_CONFIG = {
@@ -27,6 +27,22 @@ const SITE_CONFIG = {
     {
       "username": "15120071077",
       "password": "J15120071077"
+    },
+    {
+      "username": "18910811101",
+      "password": "L18910811101"
+    },
+    {
+      "username": "13910909925",
+      "password": "C13910909925"
+    },
+    {
+      "username": "18311482884",
+      "password": "G18311482884"
+    },
+    {
+      "username": "13121490918",
+      "password": "W13121490918"
     }
   ]
 };
@@ -41,6 +57,6 @@ const CONFIG = {
     password: "khxr_admin_2026"
   },
   categories: SITE_CONFIG.starredCategories,
-  version: "更新日期：20260616",
+  version: "更新日期：20260617",
   lastUpdate: "最后更新：2026/6/16 14:02"
 };
